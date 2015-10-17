@@ -1,5 +1,5 @@
 class Hotel
-  attr_accessor :name, :rooms, :id
+  attr_accessor :name, :rooms, :id, :guests, :number_of_rooms
   attr_reader :address
 
   def initialize(options = {})
@@ -7,10 +7,13 @@ class Hotel
     @address = options.fetch(:address)
     self.rooms = []
     self.id = options.fetch(:id)
+    self.guests = 0
+    self.number_of_rooms = 0
   end
 
   def add_room(options = {})
-    self.rooms << Room.new(price: options[:price], beds: options[:beds])
+    self.number_of_rooms += 1
+    self.rooms << Room.new(price: options[:price], beds: options[:beds], name: self.number_of_rooms)
   end
 
   def empty_rooms
@@ -21,8 +24,33 @@ class Hotel
     rooms.select { |room| room.occupied? }
   end
 
+  def rooms_available_pretty_string(doubles_available, singles_available)
+    
+    doubles = if doubles_available == 1
+      "is 1 double room"
+    else
+      "are #{doubles_available} double rooms"
+    end
 
-  def pretty_string
+    singles = if singles_available == 1
+      "1 single room"
+    else
+      "#{singles_available} single rooms"
+    end
+
+    puts "There #{doubles} and #{singles} available."
+  end
+
+  def doubles_available
+    self.empty_rooms.inject(0) { |count, room| room.double? ? count += 1 : count }
+  end
+
+  def singles_available
+    self.empty_rooms.inject(0) { |count, room| !room.double? ? count += 1 : count }
+  end
+
+
+  def hotel_pretty_string
     "#{self.name} has #{rooms.size} rooms, #{empty_rooms.size} are currently available."
   end
 
@@ -31,6 +59,7 @@ class Hotel
   end
 
   def check_in(guests)
+    self.guests += guests.size
     empty_rooms.each { |room| room.check_in(guests) }
   end
 
@@ -38,9 +67,6 @@ class Hotel
     binding.pry
     occupied_rooms.each { |room| room.check_out(guest_names) }
   end
-# problem with chwckout is that when get guest is called for checkout
-# a new guest object is created with that name, so when the room tries
-# to delete that object it doesn't effect the original guest
 
   def create_new_guests(guest_names)
     guest_names.map { |name| Person.new(name: name) }
@@ -52,7 +78,6 @@ class Hotel
     response = gets.chomp
     guest_names = []
     until response == ''
-      #guests << Person.new(name: response)
       guest_names << response
       print "Next guest (or press enter to continue): "
       response = gets.chomp
@@ -67,11 +92,20 @@ class Hotel
         check_in(guests)
       else
         check_out(guest_names)
-        # need to follow this through, to account for name being passed as string
       end
     end
   end
 
+  def occupancy_report
+    puts "#{self.name} currently has #{self.guests} guests."
+    rooms_available_pretty_string(doubles_available, singles_available)
+    occupied_rooms.each { |room| room.occupancy_report }
+    puts
+  end
 
+  def revenue_report
+    daily_revenue = occupied_rooms.inject(0) { |revenue, room| revenue += room.price }
+    puts "#{self.name}: daily revenue: #{daily_revenue}"
+  end
 
 end

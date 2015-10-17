@@ -11,7 +11,7 @@ class Chain
   end
 
   def list_hotels
-    self.hotels.map { |id, hotel| hotel.pretty_string }
+    self.hotels.map { |id, hotel| hotel.hotel_pretty_string }
   end
 
   def check_in
@@ -21,11 +21,15 @@ class Chain
     puts list_hotels
     puts
     puts "Please enter the number of the vault you'd like to check in to."
-    # throws error if you don't enter a vault
-    # chain.rb:27:in `check_in': undefined method `get_guests' for nil:NilClass
     puts
     print "--> "
     vault = gets.to_i
+    until self.hotels.keys.include?(vault)
+      puts
+      puts "Incorrect entry, please try again."
+      print "--> "
+      vault = gets.to_i
+    end
     hotels[vault].get_guests(:check_in)
   end
 
@@ -40,4 +44,11 @@ class Chain
     hotels[vault].get_guests(:check_out)
   end
 
+  def occupancy_report
+    hotels.values.each { |hotel| hotel.occupancy_report }
+  end
+
+  def revenue_report
+    hotels.each_value { |hotel| hotel.revenue_report }
+  end
 end

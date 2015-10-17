@@ -31,3 +31,14 @@ def vacate_room(chain)
   chain.vacate_room
 end
 
+def occupancy_report(chain)
+  puts
+  chain.occupancy_report
+end
+
+def revenue_report(chain)
+  puts
+  chain.revenue_report
+end
+
+
