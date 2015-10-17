@@ -34,6 +34,7 @@ until response == 0
       list_hotels(chain)
     when 2
       check_in(chain)
+      # add option to choose room by price?
     when 3
       vacate_room(chain)
     when 4

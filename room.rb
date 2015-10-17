@@ -21,8 +21,8 @@ def check_in(guests)
   end
 end
 
-def check_out(guests)
-    guests.each { |guest| self.guests.delete(guest) }
+def check_out(guest_names)
+    self.guests.each { |guest| self.guests.delete(guest) if guest_names.include?(guest.name)  }
 end
 
 end

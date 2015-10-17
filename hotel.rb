@@ -18,7 +18,7 @@ class Hotel
   end
 
   def occupied_rooms
-    rooms.select { |room| !room.occupied? }
+    rooms.select { |room| room.occupied? }
   end
 
 
@@ -34,28 +34,41 @@ class Hotel
     empty_rooms.each { |room| room.check_in(guests) }
   end
 
-  def check_out(guests)
-    occupied_rooms.each { |room| room.check_out(guests) }
+  def check_out(guest_names)
+    binding.pry
+    occupied_rooms.each { |room| room.check_out(guest_names) }
   end
 # problem with chwckout is that when get guest is called for checkout
 # a new guest object is created with that name, so when the room tries
 # to delete that object it doesn't effect the original guest
+
+  def create_new_guests(guest_names)
+    guest_names.map { |name| Person.new(name: name) }
+  end
+
   def get_guests(value)
     puts
     print "Guest name: "
     response = gets.chomp
-    guests = []
+    guest_names = []
     until response == ''
-      guests << Person.new(name: response)
+      #guests << Person.new(name: response)
+      guest_names << response
       print "Next guest (or press enter to continue): "
       response = gets.chomp
     end
     beds = available_beds
-    if beds < guests.size
+    if beds < guest_names.size
       puts
       puts "Sorry #{self.name} only has space left for #{beds} guests."
     else
-      value == :check_in ? check_in(guests) : check_out(guests)
+      if value == :check_in
+        guests = create_new_guests(guest_names)
+        check_in(guests)
+      else
+        check_out(guest_names)
+        # need to follow this through, to account for name being passed as string
+      end
     end
   end
 
