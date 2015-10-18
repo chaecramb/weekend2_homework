@@ -58,9 +58,17 @@ class Hotel
     empty_rooms.inject(0) { |beds, room| beds += room.beds }
   end
 
-  def check_in(guests)
-    self.guests += guests.size
-    empty_rooms.each { |room| room.check_in(guests) }
+  def check_in
+    guest_names = get_guests
+    beds = available_beds
+    if beds < guest_names.size
+      puts
+      puts "Sorry #{self.name} only has space left for #{beds} guests."
+    else
+      guests = create_new_guests(guest_names)
+      self.guests += guests.size
+      empty_rooms.each { |room| room.check_in(guests) }
+    end
   end
 
   def check_out(guest_names)
@@ -72,7 +80,7 @@ class Hotel
     guest_names.map { |name| Person.new(name: name) }
   end
 
-  def get_guests(value)
+  def get_guests
     puts
     print "Guest name: "
     response = gets.chomp
@@ -82,18 +90,7 @@ class Hotel
       print "Next guest (or press enter to continue): "
       response = gets.chomp
     end
-    beds = available_beds
-    if beds < guest_names.size
-      puts
-      puts "Sorry #{self.name} only has space left for #{beds} guests."
-    else
-      if value == :check_in
-        guests = create_new_guests(guest_names)
-        check_in(guests)
-      else
-        check_out(guest_names)
-      end
-    end
+    guest_names
   end
 
   def occupancy_report

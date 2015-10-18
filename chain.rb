@@ -14,23 +14,28 @@ class Chain
     self.hotels.map { |id, hotel| hotel.hotel_pretty_string }
   end
 
-  def check_in
+  def get_hotel(value)
     print `clear`
     puts "Thank you for choosing Vault Tec's Wasteland Fallout Shelter Network"
     puts
     puts list_hotels
     puts
-    puts "Please enter the number of the vault you'd like to check in to."
+    puts "Please enter the number of the vault you'd like to #{value == :check_in ? "check in to" : "check out off"}."
     puts
     print "--> "
-    vault = gets.to_i
-    until self.hotels.keys.include?(vault)
+    hotel_id = gets.to_i
+    until self.hotels.keys.include?(hotel_id)
       puts
       puts "Incorrect entry, please try again."
       print "--> "
-      vault = gets.to_i
+      hotel_id = gets.to_i
     end
-    hotels[vault].get_guests(:check_in)
+    hotel_id
+  end
+
+  def check_in
+    hotel_id = get_hotel(:check_in)
+    hotels[hotel_id].check_in
   end
 
   def vacate_room
@@ -40,8 +45,14 @@ class Chain
     puts "Please enter the number of the vault you are checking out of."
     puts
     print "--> "
-    vault = gets.to_i
-    hotels[vault].get_guests(:check_out)
+    hotel = gets.to_i
+    until self.hotels.keys.include?(hotel)
+      puts
+      puts "Incorrect entry, please try again."
+      print "--> "
+      hotel = gets.to_i
+    end
+    hotels[hotel].check_out(hotels[hotel].get_guests)
   end
 
   def occupancy_report
