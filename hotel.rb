@@ -71,11 +71,28 @@ class Hotel
     end
   end
 
+  def valid_guests(guest_names)
+    guest_names.select do |guest_name| 
+      self.rooms.inject(false) do |valid, room| 
+        valid = (room.valid_guest?(guest_name) ? true : false) || valid
+      end
+    end
+  end
+
   def check_out
+    puts `clear`
+    puts " *** Checkout ***"
+    puts
+    puts "Current #{self.name} guests "
+    occupied_rooms.each { |room| room.occupancy_report }
     guest_names = get_guests
-    # check valid guest
-    occupied_rooms.each { |room| room.check_out(guest_names) }
-    self.guests -= guest_names.size
+    guests_to_check_out = valid_guests(guest_names)
+    invalid_names = guest_names - guests_to_check_out
+    if invalid_names.any?
+      invalid_names.each { |name| puts "#{name} is not currently a guest in #{self.name}."}
+    end
+    occupied_rooms.each { |room| room.check_out(guests_to_check_out) }
+    self.guests -= guests_to_check_out.size
   end
 
   def create_new_guests(guest_names)
