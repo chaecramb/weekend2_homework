@@ -71,9 +71,11 @@ class Hotel
     end
   end
 
-  def check_out(guest_names)
-    binding.pry
+  def check_out
+    guest_names = get_guests
+    # check valid guest
     occupied_rooms.each { |room| room.check_out(guest_names) }
+    self.guests -= guest_names.size
   end
 
   def create_new_guests(guest_names)

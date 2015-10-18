@@ -39,20 +39,8 @@ class Chain
   end
 
   def vacate_room
-    print `clear`
-    puts list_hotels
-    puts
-    puts "Please enter the number of the vault you are checking out of."
-    puts
-    print "--> "
-    hotel = gets.to_i
-    until self.hotels.keys.include?(hotel)
-      puts
-      puts "Incorrect entry, please try again."
-      print "--> "
-      hotel = gets.to_i
-    end
-    hotels[hotel].check_out(hotels[hotel].get_guests)
+    hotel_id = get_hotel(:check_out)
+    hotels[hotel_id].check_out
   end
 
   def occupancy_report
